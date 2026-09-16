@@ -1,4 +1,4 @@
-name: Build Ganapati AI APK
+name: Build GanapatiAI APK
 
 on:
   workflow_dispatch:
@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Setup Java
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -22,15 +22,24 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: ''
 
-      - name: Install Gradle
-        uses: gradle/actions/setup-gradle@v4
+      - name: Install Android SDK packages
+        run: |
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: '8.10'
 
       - name: Build APK
-        run: gradle assembleDebug
+        run: |
+          gradle :app:assembleDebug --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: GanapatiAI-APK
+          name: GanapatiAI-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
