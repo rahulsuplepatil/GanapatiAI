@@ -14,25 +14,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Java
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
-      - name: Flutter dependencies
-        run: flutter pub get
+      - name: Install Gradle
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Build APK
-        run: flutter build apk --release
+        run: gradle assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: GanapatiAI-APK
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: app/build/outputs/apk/debug/app-debug.apk
